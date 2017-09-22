@@ -21,6 +21,16 @@
 ;;;------------------------------------------------------------------------------
 ;;; setup completion
 
+;; == yasnippet ==
+(use-package yasnippet
+  :ensure t
+  :defer t
+  :init
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  )
+  
+
 ;; == irony-mode ==
 (use-package irony
   :ensure t
