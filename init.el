@@ -33,8 +33,9 @@
   :ensure t
   :defer t
   :init
-  (yas-reload-all)
   (add-hook 'prog-mode-hook #'yas-minor-mode)
+  :config
+  (yas-reload-all)
   )
   
 
@@ -111,8 +112,11 @@
 (setq column-number-mode t) ; shows column number at point // TODO - add visual line at some point
 (setq-default indent-tabs-mode nil) ;; no tabs
 
-(require 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+  )
 
 (which-function-mode 1) ; shows current function in mode-line
 
@@ -124,28 +128,39 @@
 (setq org-src-fontify-natively t) ; fontify code in code blocks
 
 ;;------------------------------------------------------------------------------
-;;; helm
+;;; helm and projectile
 ;;------------------------------------------------------------------------------
-(require 'helm-config)
+(use-package projectile
+  :ensure t
+  :init
+  (setq projectile-completion-system 'helm)
+  (setq projectile-enable-caching t)
+  :config
+  (add-to-list 'projectile-other-file-alist '("cc" "h")) ; .cc -> .h
+  (add-to-list 'projectile-other-file-alist '("h" "cc")) ; .h -> .cc
+  )
+  
+(use-package helm
+  :ensure t
+  :bind (("M-x" . helm-M-x)
+	 ("C-x b" . helm-mini))
+  :init
+  (setq helm-projectile-fuzzy-match nil)
+  ;;;fuzzy
+  (setq helm-semantic-fuzzy-match t
+	helm-imenu-fuzzy-match    t
+	helm-M-x-fuzzy-match      t
+	helm-recentf-fuzzy-match  t
+	helm-buffers-fuzzy-matching t)
+  :config
+  (helm-mode 1)
+  )
 
-(global-set-key (kbd "M-x") 'helm-M-x) ; use helm-M-x instead of M-x
-(global-set-key (kbd "C-x b") 'helm-mini)
-(helm-mode 1)
-
-(projectile-global-mode)
-(setq projectile-completion-system 'helm)
-(setq projectile-enable-caching t)
-(add-to-list 'projectile-other-file-alist '("cc" "h")) ; .cc -> .h
-(add-to-list 'projectile-other-file-alist '("h" "cc")) ; .h -> .cc
-(setq helm-projectile-fuzzy-match nil)
-(helm-projectile-on) ;; must turn on helm-projectile-on after other settings
-
-;;fuzzy
-(setq helm-semantic-fuzzy-match t
-      helm-imenu-fuzzy-match    t
-      helm-M-x-fuzzy-match      t
-      helm-recentf-fuzzy-match  t
-      helm-buffers-fuzzy-matching t)
+(use-package helm-projectile
+  :init
+  (projectile-global-mode)
+  (helm-projectile-on) ;; must turn on helm-projectile-on after other settings
+  )  
 
 ;;------------------------------------------------------------------------------
 ;;; verilog-mode 
